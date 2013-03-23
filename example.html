@@ -43,11 +43,6 @@
 				} else if ( data.brightness <= 80 && logo.attr( 'src' ) != 'images/jqolor-logo.png' ) {
 					logo.attr( 'src', 'images/jqolor-logo.png' );
 				}
-				
-				// TODO: TEST: Do we have to worry about too many updates in a period of time?
-				// Maybe we should setup an independent timer to ensure that we're not changing the hue too frequently.
-				// This method could just set the most recent hue value and the timer could send through events.
-				$.ajax( { url: "http://10.0.1.17:3000/update/?hue=" + data.hue + "&brightness=" + data.brightness + "&saturation=" + data.saturation } );
 			}
 			
 			var jQolor = $('#my-color-picker').jQolor( { color : '1C72B5', colorChange : onColorChange } );
