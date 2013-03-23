@@ -1,0 +1,89 @@
+.jqolor .btn {
+}
+.jqolor input {
+	height: 30px;
+}
+
+.jqolor {
+	width: 292px;
+	width: 295px \9;
+}
+
+.picker-container {
+	width: 292px;
+	width: 295px \9;
+	display: inline-block;
+	position: relative;
+}
+
+.picker-container .float {
+	width: 292px;
+	width: 295px \9;
+	z-index: 1;
+	position: absolute;
+	padding: 5px;
+	background-color: #EEE;
+	border: 1px solid #CCC;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	box-shadow: 1px 1px 1px rgba( 0, 0, 0, .25 );
+}
+
+.picker {
+	display: inline-block;
+	width: 256px;
+	height: 256px;
+	position: relative;
+	overflow: hidden;
+	
+	border: 1px solid #999;
+	
+	background-image: url( ../images/picker-saturation-and-brightness-overlay.png );
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	
+	cursor: url( ../images/picker-mouse-cursor.gif );
+	cursor: url( ../images/picker-mouse-cursor.gif ) 2 2, auto;
+	
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+.picker-pointer {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	position: absolute;
+	top: -5px;
+	left: -5px;
+	
+	overflow: visible;
+}
+
+.hue-slider {
+	display: inline-block;
+	width: 30px;
+	height: 256px;
+	
+	border: 1px solid #999;
+	
+	background-image: url( ../images/hue-slider.png );
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	
+	position: relative;
+	overflow: hidden;
+	
+	margin-left: 2px;
+}
+
+.hue-slider-marker {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: auto;
+}

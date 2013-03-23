@@ -1,0 +1,93 @@
+<html>
+<head>
+<title>jQolor: JavaScript Color Picker</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+
+<link rel="stylesheet" type="text/css" href="//twitter.github.com/bootstrap/assets/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="css/jqolor.css" />
+<style type="text/css">
+	body {
+		margin: 0;
+		padding: 0;
+	}
+	#jqolor-logo-container {
+		margin-top: 10px;
+		display: inline-block;
+		width: 322px;
+		background-color: #1C72B5;
+		-moz-border-radius: 20px;
+		border-radius: 20px;
+	}
+	#jqolor-logo-container img {
+		height: 100px;
+		width: auto;
+	}
+</style>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+<script type="text/javascript" src="javascript/jquery.virtual-events.js"></script>
+<script type="text/javascript" src="javascript/helper.js"></script>
+<script type="text/javascript" src="javascript/jqolor.js"></script>
+<script type="text/javascript">
+	$(document).ready(
+		function() {
+			function onColorChange( event, data ) {
+				// data keys: hex, red, green, blue, hue, saturation, brightness
+				$('#jqolor-logo-container').css( 'background-color', data.hex );
+				
+				logo = $('#jqolor-logo');
+				
+				if ( data.brightness > 80 && logo.attr( 'src' ) != 'images/jqolor-logo-inverted.png' ) {
+					logo.attr( 'src', 'images/jqolor-logo-inverted.png' );
+				} else if ( data.brightness <= 80 && logo.attr( 'src' ) != 'images/jqolor-logo.png' ) {
+					logo.attr( 'src', 'images/jqolor-logo.png' );
+				}
+				
+				// TODO: TEST: Do we have to worry about too many updates in a period of time?
+				// Maybe we should setup an independent timer to ensure that we're not changing the hue too frequently.
+				// This method could just set the most recent hue value and the timer could send through events.
+				$.ajax( { url: "http://10.0.1.17:3000/update/?hue=" + data.hue + "&brightness=" + data.brightness + "&saturation=" + data.saturation } );
+			}
+			
+			var jQolor = $('#my-color-picker').jQolor( { color : '1C72B5', colorChange : onColorChange } );
+		} );
+</script>
+</head>
+
+<body>
+<div class="container">	
+	<center>
+		<div id="jqolor-logo-container">
+			<img id="jqolor-logo" src="images/jqolor-logo.png" />
+		</div>
+		
+		<p>
+			Written by <a href="http://www.briandavidvaughn.com">Brian Vaughn</a>
+		</p>
+		
+		<input id="my-color-picker" name="my-color-picker" />
+	</center>
+	
+	<h3 class="alert alert-info">How to use jQolor</h3>
+	
+	<ol>
+		<li>
+			jQolor is built on top of <a href="http://jquery.com/">jQuery <small>(1.9.1)</small></a> and <a href="http://twitter.github.com/bootstrap/">Bootstrap</a> so you'll need to include both of those components before including jQolor.
+		</li>
+		<li>
+			Next you'll need to define an input to become the color-picker.
+			<pre>&lt;input id="my-color-picker" name="my-color-picker" /&gt;</pre>
+		</li>
+		<li>
+			Once your document has loaded you can initialize jQolor like this:
+				<pre>var myColorPicker = $('#my-color-picker').jQolor( { color : '1C72B5' } );
+myColorPicker.bind( 'colorChange',
+	function( event, data ) {
+		// data keys: hex, red, green, blue, hue, saturation, brightness
+	} );</pre>
+		</li>
+	</ol>
+</div>
+</body>
+</html>
