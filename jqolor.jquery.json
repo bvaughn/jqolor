@@ -1,0 +1,31 @@
+{
+    "name": "jqolor",
+    "title": "jQolor",
+    "description": "Color-picker similar to the one in Photoshop. jQolor can be used to decorate a text input field.",
+    "keywords": [
+        "color"
+    ],
+    "version": "1.0.0",
+    "author": {
+        "name": "Brian Vaughn",
+        "url": "https://www.briandavidvaughn.com"
+    },
+    "maintainers": [
+        {
+	        "name": "Brian Vaughn",
+	        "url": "https://www.briandavidvaughn.com"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "Apache License",
+            "url": "http://opensource.org/licenses/Apache-2.0"
+        }
+    ],
+    "bugs": "https://github.com/bvaughn/jqolor/issues",
+    "homepage": "https://github.com/bvaughn/jqolor",
+    "docs": "https://github.com/bvaughn/jqolor",
+    "dependencies": {
+        "jquery": ">=1.9.1"
+    }
+}
