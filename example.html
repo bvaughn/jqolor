@@ -44,7 +44,18 @@
 				}
 			}
 			
-			var jQolor = $('#my-color-picker').jQolor( { color : '1C72B5', colorChange : onColorChange } );
+			var jQolorSimpleExample =
+				$('#jqolor-simple-example').jQolor(
+					{
+						color : 'FF0000'
+					} );
+			
+			var jQolorEventHandlingExample =
+				$('#jqolor-event-handling-example').jQolor(
+					{
+						color : '1C72B5',
+						colorChange : onColorChange
+					} );
 		} );
 </script>
 </head>
@@ -59,9 +70,24 @@
 		<p>
 			Written by <a href="http://www.briandavidvaughn.com">Brian Vaughn</a>
 		</p>
-		
-		<input id="my-color-picker" name="my-color-picker" />
 	</center>
+	
+	<h2>Example</h2>
+	
+	<p>
+		Attached to a text <code>&lt;input&gt;</code> field.
+		Default color shown is set to <code>FF0000</code>.
+	</p>
+	<p>
+		<input id="jqolor-simple-example" name="jqolor-simple-example" />
+	</p>
+	
+	<p>
+		Changes made to this component trigger events which are used to alter the header graphic on this page.
+	</p>
+	<p>
+		<input id="jqolor-event-handling-example" name="jqolor-event-handling-example" />
+	</p>
 	
 	<h3 class="alert alert-info">How to use jQolor</h3>
 	

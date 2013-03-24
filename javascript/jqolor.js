@@ -1,9 +1,25 @@
-// http://docs.jquery.com/Plugins/Authoring
+/* =========================================================
+ * jqolor.js 
+ * https://github.com/bvaughn/jqolor
+ * =========================================================
+ * Copyright 2013 Brian Vaughn
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================= */
 (function( $ ) {
 	var methods = {
 		calculatCurrentlySelectedColor  : jQolor_calculatCurrentlySelectedColor,
 		init                            : jQolor_init,
-		getSelectedHueFromPixelPosition : jQolor_getSelectedHueFromPixelPosition,
 		getSelectedHueFromYPosition     : jQolor_getSelectedHueFromYPosition,
 		handlePickerChange              : jQolor_handlePickerChange,
 		hex2rgb                         : jQolor_hex2rgb,
@@ -65,39 +81,38 @@ function jQolor_init( options ) {
 	    html += '<div class="input-prepend input-append jqolor">';
 	    html += '	<span class="add-on">#</span>';
 	    html += '	<input id="' + textInputId + '" name="' + this.attr( 'name' ) + '" type="text" maxlength="6" />';
-	    html += '	<div id="picker-button" class="btn">';
+	    html += '	<div id="' + textInputId + '-picker-button" class="btn">';
 	    html += '		Go!';
-	    html += '		<i id="picker-button-icon" class="icon-search"></i>';
+	    html += '		<i id="' + textInputId + '-picker-button-icon" class="icon-search"></i>';
 	    html += '	</div>';
 	    html += '</div>';
-	    html += '<div id="picker-container" class="picker-container">'
+	    html += '<div id="' + textInputId + '-picker-container" class="picker-container">'
 	    html += '	<div class="float">'
-		html +=	'		<div id="picker" class="pull-left picker">';
-		html +=	'			<img id="picker-pointer" class="picker-pointer" src="images/picker-pointer-light.gif" />';
+		html +=	'		<div id="' + textInputId + '-picker" class="pull-left picker">';
+		html +=	'			<img id="' + textInputId + '-picker-pointer" class="picker-pointer" src="images/picker-pointer-light.gif" />';
 		html +=	'		</div>';
-		html +=	'		<div id="hue-slider" class="pull-left hue-slider">';
-		html +=	'			<img id="hue-slider-marker" class="hue-slider-marker" src="images/hue-slider-marker.png" />';
+		html +=	'		<div id="' + textInputId + '-hue-slider" class="pull-left hue-slider">';
+		html +=	'			<img id="' + textInputId + '-hue-slider-marker" class="hue-slider-marker" src="images/hue-slider-marker.png" />';
 		html +=	'		</div>';
 		html +=	'	</div>';
 		html +=	'</div>';
 	this.replaceWith( html );
 	
 	// Grab convenience handles on all of our newly-created DOM objects
-	// TODO: Enforce UIDs on these or we'll run into collisions.
-	this.pickerContainer = $('#picker-container');
+	this.pickerContainer = $('#' + textInputId + '-picker-container');
 	this.textInput = $('#' + textInputId);
-	this.picker = $('#picker');
-	this.pickerButton = $('#picker-button');
-	this.pickerButtonIcon = $('#picker-button-icon');
-	this.pickerPointer = $('#picker-pointer');
-	this.hueSlider = $('#hue-slider');
-	this.hueSliderMarker = $('#hue-slider-marker');
+	this.picker = $('#' + textInputId + '-picker');
+	this.pickerButton = $('#' + textInputId + '-picker-button');
+	this.pickerButtonIcon = $('#' + textInputId + '-picker-button-icon');
+	this.pickerPointer = $('#' + textInputId + '-picker-pointer');
+	this.hueSlider = $('#' + textInputId + '-hue-slider');
+	this.hueSliderMarker = $('#' + textInputId + '-hue-slider-marker');
 	
 	// Prevent touchable components from showing drag indicators.
 	this.pickerPointer.on(   'dragstart', function( event ) { event.preventDefault(); } );
 	this.hueSliderMarker.on( 'dragstart', function( event ) { event.preventDefault(); } );
 	
-	instance = this;
+	var instance = this;
 	
 	// Assign mouse/touch event handlers.
 	this.hueSlider.onToolClickOrDrag(
@@ -123,6 +138,10 @@ function jQolor_init( options ) {
 		function( event ) {
 			return instance.jQolor( 'show', event );
 		} );
+	this.textInput.focusout(
+		function( event ) {
+			return instance.jQolor( 'hide', event );
+		} );
 	
 	this.pickerButton.on( 'vclick',
 		function( event ) {
@@ -146,6 +165,9 @@ function jQolor_onPickerButtonClick( event ) {
 	} else {
 		this.jQolor( 'show' );
 	}
+	
+	// Set focus on text-input which will allow for ENTER and ESC keys to hide the picker.
+	this.textInput.focus();
 }
 
 function jQolor_show( duration ) {
@@ -167,7 +189,9 @@ function jQolor_onTextInputKeyUp( event ) {
 	
 	code = event.keyCode ? event.keyCode : event.which;
 
-	if ( code == 13 ) {
+	// 13 = ENTER key
+	// 27 = ESC key
+	if ( code == 13 || code == 27 ) {
 		this.jQolor( 'hide' );
 		return;
 	}
@@ -214,7 +238,6 @@ function jQolor_onHueToolClickOrDrag( event ) {
 	
 	this.jQolor( 'setHueSliderPosition', y );
 	
-	//this.currentHue = this.jQolor( 'getSelectedHueFromPixelPosition', y );
 	this.currentHue = this.jQolor( 'getSelectedHueFromYPosition', y );
 	
 	this.picker.css( 'background-color', '#' + this.currentHue );
@@ -329,19 +352,6 @@ function jQolor_calculatCurrentlySelectedColor( x, y ) {
 	//console.log( 'calculatCurrentlySelectedColor(): x = ' + x + ', y = ' + y + ', hex = ' + this.currentHex + ', perceived-brightness: ' + this.currentPerceivedBrightness );
 }
 
-// Uses an HTML5 Canvas to detect the color of a specific pixel in the hue picker.
-function jQolor_getSelectedHueFromPixelPosition( y ) {
-	var canvas = document.createElement('canvas');
-	var context = canvas.getContext('2d');
-	context.drawImage( document.getElementById('hue-slider-image'), 0, 0 );
-	
-	var data = context.getImageData( 0, y, 1, 1 ).data;
-	
-	var hex = this.jQolor( 'rgb2hex', data[0], data[1], data[2] );
-	
-	return hex;
-}
-
 // Calculates the hue from the y position within the red-to-blue-to-green gradient.
 function jQolor_getSelectedHueFromYPosition( y ) {
 	var r = 0;
@@ -428,7 +438,8 @@ function jQolor_rgb2hex( r, g, b ) {
 	return hex.join('');
 }
 
-// This method lifted from Stefan Petre's color picker (www.eyecon.ro)
+// This method copied from Stefan Petre's color picker (www.eyecon.ro)
+// http://www.eyecon.ro/bootstrap-colorpicker/js/bootstrap-colorpicker.js
 function jQolor_rgb2hsb( rgb ) {
 	var hsb = {
 		hue: 0,
