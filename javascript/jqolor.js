@@ -1,20 +1,25 @@
 // http://docs.jquery.com/Plugins/Authoring
 (function( $ ) {
 	var methods = {
-		calculatCurrentlySelectedColor : calculatCurrentlySelectedColor,
-		init                           : jQolor_init,
-		handlePickerChange             : handlePickerChange,
-		hide                           : jQolor_hide,
-		onHueToolClickOrDrag           : onHueToolClickOrDrag,
-		onPickerButtonClick            : onPickerButtonClick,
-		onPickerToolClickOrDrag        : onPickerToolClickOrDrag,
-		onPickerToolStartDragClosure   : onPickerToolStartDragClosure,
-		onPickerToolStopDragClosure    : onPickerToolStopDragClosure,
-		onTextInputKeyUp               : onTextInputKeyUp,
-		setHex                         : setHex,
-		setHueSliderPosition           : setHueSliderPosition,
-		setPickerPointerPosition       : setPickerPointerPosition,
-		show                           : jQolor_show
+		calculatCurrentlySelectedColor  : jQolor_calculatCurrentlySelectedColor,
+		init                            : jQolor_init,
+		getSelectedHueFromPixelPosition : jQolor_getSelectedHueFromPixelPosition,
+		getSelectedHueFromYPosition     : jQolor_getSelectedHueFromYPosition,
+		handlePickerChange              : jQolor_handlePickerChange,
+		hex2rgb                         : jQolor_hex2rgb,
+		hide                            : jQolor_hide,
+		onHueToolClickOrDrag            : jQolor_onHueToolClickOrDrag,
+		onPickerButtonClick             : jQolor_onPickerButtonClick,
+		onPickerToolClickOrDrag         : jQolor_onPickerToolClickOrDrag,
+		onPickerToolStartDragClosure    : jQolor_onPickerToolStartDragClosure,
+		onPickerToolStopDragClosure     : jQolor_onPickerToolStopDragClosure,
+		onTextInputKeyUp                : jQolor_onTextInputKeyUp,
+		rgb2hex                         : jQolor_rgb2hex,
+		rgb2hsb                         : jQolor_rgb2hsb,
+		setHex                          : jQolor_setHex,
+		setHueSliderPosition            : jQolor_setHueSliderPosition,
+		setPickerPointerPosition        : jQolor_setPickerPointerPosition,
+		show                            : jQolor_show
 	};
 	
 	var currentHex;
@@ -135,7 +140,7 @@ function jQolor_init( options ) {
 	return this;
 }
 
-function onPickerButtonClick( event ) {
+function jQolor_onPickerButtonClick( event ) {
 	if ( this.visible ) {
 		this.jQolor( 'hide' );
 	} else {
@@ -157,7 +162,7 @@ function jQolor_hide( duration ) {
 	this.visible = false;
 }
 
-function onTextInputKeyUp( event ) {
+function jQolor_onTextInputKeyUp( event ) {
 	var value = this.textInput.val();
 	
 	code = event.keyCode ? event.keyCode : event.which;
@@ -172,7 +177,7 @@ function onTextInputKeyUp( event ) {
 	this.jQolor( 'setHex', value );
 }
 
-function onPickerToolClickOrDrag( event ) {	
+function jQolor_onPickerToolClickOrDrag( event ) {	
 	var bounds = this.picker.globalToLocal( event.pageX, event.pageY );
 	var width = this.picker.width();
 	var height = this.picker.height();
@@ -195,22 +200,22 @@ function onPickerToolClickOrDrag( event ) {
 		this.pickerPointer.css( 'opacity', 1.0 );
 	}
 }
-function onPickerToolStartDragClosure() {
+function jQolor_onPickerToolStartDragClosure() {
 	// No-op
 }
-function onPickerToolStopDragClosure() {
+function jQolor_onPickerToolStopDragClosure() {
 	this.pickerPointer.css( 'opacity', 1.0 );
 }
 
-function onHueToolClickOrDrag( event ) {
+function jQolor_onHueToolClickOrDrag( event ) {
 	var bounds = this.hueSlider.globalToLocal( event.pageX, event.pageY );
 
 	var y = Math.max( Math.min( bounds.y, this.hueSlider.height() ), 0 ) / this.hueSlider.height();
 	
 	this.jQolor( 'setHueSliderPosition', y );
 	
-	//this.currentHue = getSelectedHueFromPixelPosition( y );
-	this.currentHue = getSelectedHueFromYPosition( y );
+	//this.currentHue = this.jQolor( 'getSelectedHueFromPixelPosition', y );
+	this.currentHue = this.jQolor( 'getSelectedHueFromYPosition', y );
 	
 	this.picker.css( 'background-color', '#' + this.currentHue );
 	
@@ -218,7 +223,7 @@ function onHueToolClickOrDrag( event ) {
 }
 
 // Expects coordinates in a format ranging from 0-1
-function handlePickerChange( x, y ) {
+function jQolor_handlePickerChange( x, y ) {
 	this.pickerX = x;
 	this.pickerY = y;
 	
@@ -246,9 +251,9 @@ function handlePickerChange( x, y ) {
 }
 
 // Updates the hue-slider and picker to the color specified (as a hex string).
-function setHex( hex ) {
-	var rgb = hex2rgb( hex );
-	var hsb = rgb2hsb( rgb );
+function jQolor_setHex( hex ) {
+	var rgb = this.jQolor( 'hex2rgb', hex );
+	var hsb = this.jQolor( 'rgb2hsb', rgb );
 	
 	var hueHeight = this.hueSlider.height();
 	
@@ -258,7 +263,7 @@ function setHex( hex ) {
 	// Solid grays will not have a hue, so we should just leave the previously selected hue for now.
 	if ( !isNaN( hueY ) ) {
 		this.jQolor( 'setHueSliderPosition', hueY );
-		this.currentHue = getSelectedHueFromYPosition( hueY );
+		this.currentHue = this.jQolor( 'getSelectedHueFromYPosition', hueY );
 		this.picker.css( 'background-color', '#' + this.currentHue );
 	}
 	
@@ -272,7 +277,7 @@ function setHex( hex ) {
 
 // Adjusts the vertical position of the hue slider (indicator) based on a 0-1 value.
 // 0 is top and 1 is bottom.
-function setHueSliderPosition( value ) {
+function jQolor_setHueSliderPosition( value ) {
 	var offset = this.hueSlider.offset();
 	var markerX = offset.left + 1;
 	var markerY = offset.top + value * this.hueSlider.height() - this.hueSliderMarker.height() / 2;
@@ -284,7 +289,7 @@ function setHueSliderPosition( value ) {
 
 // Adjusts the position of the picker-pointer based on horizontal and vertical 0-1 values.
 // 0 is far-left or top and 1 is far-right or bottom.
-function setPickerPointerPosition( horizontalValue, verticalValue ) {
+function jQolor_setPickerPointerPosition( horizontalValue, verticalValue ) {
 	var offset = this.picker.offset();
 	
 	var pickerPointerX = offset.left + horizontalValue * this.picker.width()  - this.pickerPointer.width() / 2;
@@ -293,8 +298,8 @@ function setPickerPointerPosition( horizontalValue, verticalValue ) {
 	this.pickerPointer.offset( { left: pickerPointerX, top: pickerPointerY } );
 }
 
-function calculatCurrentlySelectedColor( x, y ) {
-	rgb = hex2rgb( this.currentHue );
+function jQolor_calculatCurrentlySelectedColor( x, y ) {
+	rgb = this.jQolor( 'hex2rgb', this.currentHue );
 	
 	var whiteLevel = 1 - x;
 	var colorLevel = 1 - whiteLevel;
@@ -311,8 +316,8 @@ function calculatCurrentlySelectedColor( x, y ) {
 	rgb.blue  = Math.round( rgb.blue  * colorLevel );
 	
 	this.currentRGB = rgb;
-	this.currentHex = rgb2hex( rgb.red, rgb.green, rgb.blue );
-	this.currentHSB = rgb2hsb( rgb );
+	this.currentHex = this.jQolor( 'rgb2hex', rgb.red, rgb.green, rgb.blue );
+	this.currentHSB = this.jQolor( 'rgb2hsb', rgb );
 	
 	// http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
 	var r = rgb.red;
@@ -325,20 +330,20 @@ function calculatCurrentlySelectedColor( x, y ) {
 }
 
 // Uses an HTML5 Canvas to detect the color of a specific pixel in the hue picker.
-function getSelectedHueFromPixelPosition( y ) {
+function jQolor_getSelectedHueFromPixelPosition( y ) {
 	var canvas = document.createElement('canvas');
 	var context = canvas.getContext('2d');
 	context.drawImage( document.getElementById('hue-slider-image'), 0, 0 );
 	
 	var data = context.getImageData( 0, y, 1, 1 ).data;
 	
-	var hex = rgb2hex( data[0], data[1], data[2] );
+	var hex = this.jQolor( 'rgb2hex', data[0], data[1], data[2] );
 	
 	return hex;
 }
 
 // Calculates the hue from the y position within the red-to-blue-to-green gradient.
-function getSelectedHueFromYPosition( y ) {
+function jQolor_getSelectedHueFromYPosition( y ) {
 	var r = 0;
 	var g = 0;
 	var b = 0;
@@ -381,9 +386,161 @@ function getSelectedHueFromYPosition( y ) {
 	b = Math.round( b * 255 );
 	g = Math.round( g * 255 );
 	
-	hex = rgb2hex( r, g, b );
+	hex = this.jQolor( 'rgb2hex', r, g, b );
 	
 	//console.log( 'getSelectedHueFromYPosition(): y = ' + y + ', hex = ' + hex );
 	
 	return hex;
 }
+
+function jQolor_hex2rgb(hex) {
+	if ( !hex ) {
+		return {
+			red:   0,
+			green: 0,
+			blue:  0
+		}
+	}
+	
+	if ( hex[0] == "#" ) hex = hex.substr(1);
+	
+	if ( hex.length == 3 ) {
+		hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+	}
+	
+	return {
+		red:   parseInt( hex.substr( 0, 2 ), 16 ),
+		green: parseInt( hex.substr( 2, 2 ), 16 ),
+		blue:  parseInt( hex.substr( 4, 2 ), 16 )
+	}
+}
+
+function jQolor_rgb2hex( r, g, b ) {
+	var hex = [ r.toString(16), g.toString(16), b.toString(16) ];
+
+	$.each( hex,
+		function( index, value ) {
+			if ( value.length == 1 ) {
+				hex[ index ] = '0' + value;
+			}
+		} );
+
+	return hex.join('');
+}
+
+// This method lifted from Stefan Petre's color picker (www.eyecon.ro)
+function jQolor_rgb2hsb( rgb ) {
+	var hsb = {
+		hue: 0,
+		saturation: 0,
+		brightness: 0
+	};
+	
+	var min = Math.min( rgb.red, rgb.green, rgb.blue );
+	var max = Math.max( rgb.red, rgb.green, rgb.blue );
+	var delta = max - min;
+	
+	hsb.brightness = max;
+	
+	if ( max != 0 ) {
+		hsb.saturation = 255 * delta / max;
+		
+		if ( rgb.red == max ) {
+			hsb.hue = ( rgb.green - rgb.blue ) / delta;
+		} else if ( rgb.green == max ) {
+			hsb.hue = 2 + ( rgb.blue - rgb.red ) / delta;
+		} else {
+			hsb.hue = 4 + ( rgb.red - rgb.green ) / delta;
+		}
+	}
+	
+	hsb.hue *= 60;
+	
+	if ( hsb.hue < 0 ) {
+		hsb.hue += 360;
+	}
+	
+	hsb.saturation *= 100 / 255;
+	hsb.brightness *= 100 / 255;
+
+	hsb.hue =        Math.round ( hsb.hue );
+	hsb.saturation = Math.round ( hsb.saturation );
+	hsb.brightness = Math.round ( hsb.brightness );
+	
+	return hsb;
+}
+
+/* Misc jQuery util methods used by jQolor */
+
+$.fn.onEnter =
+	function( closure ) {
+		$(this).keypress(
+			function( event ) {
+				code = event.keyCode ? event.keyCode : event.which;
+			
+	        	if ( code == 13 ) {
+					closure.apply( this );
+
+					return false;
+	    		}
+			} );
+	};
+
+$.fn.onToolClickOrDrag =
+	function( clickOrDragClosure, startDragClosure, stopDragClosure ) {
+		$(this).on( 'vclick', clickOrDragClosure );
+		$(this).bind( 'vmousedown',
+			function() {
+				if ( startDragClosure != null ) {
+					startDragClosure();
+				}
+				
+				function onMoseMove( event ) {
+					clickOrDragClosure( event );
+					
+					event.preventDefault();
+				}
+				
+				function onMouseUp() {
+					$('body').unbind( 'vmousemove', onMoseMove );
+					$('body').unbind( 'vmouseup', onMouseUp );
+					
+					if ( stopDragClosure != null ) {
+						stopDragClosure();
+					}
+				}
+				
+				$('body').bind( 'vmousemove', onMoseMove );
+				$('body').bind( 'vmouseup', onMouseUp );
+				
+				return false;
+			} );
+	};
+
+$.fn.hitTestPoint =
+	function( pageX, pageY ) {
+		var bounds = this.globalToLocal( pageX, pageY );
+
+		return bounds.x >= 0 && bounds.x <= this.width() &&
+		       bounds.y >= 0 && bounds.y <= this.height();
+	};
+
+$.fn.globalToLocal =
+	function( pageX, pageY ) {
+		var offset = this.offset();
+		
+		return( {
+			x: Math.floor( pageX - offset.left ),
+			y: Math.floor( pageY - offset.top )
+		} );
+	};
+
+$.fn.localToGlobal =
+	function( localX, localY ) {
+		var offset = this.offset();
+		
+		return( {
+			x: Math.floor( localX + offset.left ),
+			y: Math.floor( localY + offset.top )
+		} );
+	};
