@@ -167,7 +167,8 @@ function jQolor_onPickerButtonClick( event ) {
 	}
 	
 	// Set focus on text-input which will allow for ENTER and ESC keys to hide the picker.
-	this.textInput.focus();
+	// NOTE: This shows onscreen keyboard on phone, which is annoying
+	//this.textInput.focus();
 }
 
 function jQolor_show( duration ) {

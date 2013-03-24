@@ -14,6 +14,8 @@
 	width: 295px \9;
 	display: inline-block;
 	position: relative;
+	left: -292px;
+	top: 10px;
 }
 
 .picker-container .float {
