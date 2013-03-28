@@ -11,8 +11,10 @@
 		margin: 0;
 		padding: 0;
 	}
+	a.bold {
+		font-weight: bold;
+	}
 	#jqolor-logo-container {
-		margin-top: 10px;
 		display: inline-block;
 		width: 322px;
 		background-color: #1C72B5;
@@ -44,11 +46,7 @@
 				}
 			}
 			
-			var jQolorSimpleExample =
-				$('#jqolor-simple-example').jQolor(
-					{
-						color : 'FF0000'
-					} );
+			$('#jqolor-simple-example').jQolor();
 			
 			var jQolorEventHandlingExample =
 				$('#jqolor-event-handling-example').jQolor(
@@ -61,53 +59,107 @@
 </head>
 
 <body>
-<div class="container">	
-	<center>
-		<div id="jqolor-logo-container">
-			<img id="jqolor-logo" src="images/jqolor-logo.png" />
-		</div>
-		
+	<div class="container">
+		<h1>
+			jQolor
+			<small>
+				JavaScript color picker
+			</small>
+		</h1>
+	
 		<p>
 			Written by <a href="http://www.briandavidvaughn.com">Brian Vaughn</a>
 		</p>
-	</center>
 	
-	<h2>Example</h2>
+		<h2>How to Use jQolor</h2>
 	
-	<p>
-		Attached to a text <code>&lt;input&gt;</code> field.
-		Default color shown is set to <code>FF0000</code>.
-	</p>
-	<p>
-		<input id="jqolor-simple-example" name="jqolor-simple-example" />
-	</p>
+		<ol>
+			<li>
+				jQolor is built on top of
+				<a class="bold" href="http://jquery.com/">jQuery <small>(1.9.1)</small></a> and
+				<a class="bold" href="http://twitter.github.com/bootstrap/">Bootstrap</a>
+				so both of those libraries must be loaded before jQolor.
+			<li>
+				Next define one or more text-type inputs to become color pickers.
+			</li>
+			<li>
+				Lastly, once the document has loaded, jQolor can be initialized by telling it which text inputs to decorate.
+			</li>
+		</ol>
 	
-	<p>
-		Changes made to this component trigger events which are used to alter the header graphic on this page.
-	</p>
-	<p>
-		<input id="jqolor-event-handling-example" name="jqolor-event-handling-example" />
-	</p>
+		<p>
+			Check out some of the examples below.
+		</p>
 	
-	<h3 class="alert alert-info">How to use jQolor</h3>
+		<h2>Examples</h2>
 	
-	<ol>
-		<li>
-			jQolor is built on top of <a href="http://jquery.com/">jQuery <small>(1.9.1)</small></a> and <a href="http://twitter.github.com/bootstrap/">Bootstrap</a> so you'll need to include both of those components before including jQolor.
-		</li>
-		<li>
-			Next you'll need to define an input to become the color-picker.
-			<pre>&lt;input id="my-color-picker" name="my-color-picker" /&gt;</pre>
-		</li>
-		<li>
-			Once your document has loaded you can initialize jQolor like this:
-				<pre>var myColorPicker = $('#my-color-picker').jQolor( { color : '1C72B5' } );
-myColorPicker.bind( 'colorChange',
-	function( event, data ) {
-		// data keys: hex, red, green, blue, hue, saturation, brightness
-	} );</pre>
-		</li>
-	</ol>
-</div>
+		<h3>Using jQolor in a Form</h3>
+	
+		<p>
+			To use jQolor in a <code>form</code> you simply need to assign a text-input as a color picker:
+		
+			<pre class="prettyprint">&lt;input id="my-color-picker" name="my-color-picker" /&gt;
+
+	&lt;script type="text/javascript"&gt;
+		$('#my-color-picker').jQolor();
+	&lt;/script&gt;</pre>
+		</p>
+	
+		<p>
+			The above code will create a jQolor selector like this:
+		</p>
+	
+		<p>
+			<input id="jqolor-simple-example" name="jqolor-simple-example" />
+		</p>
+	
+		<p>
+			The user-selected color will be passed to the form-handler as a HEX string on form-submit.
+		</p>
+	
+		<h3>Handling jQolor Events</h3>
+	
+		<p>
+			You can also attach an event-handler to a jQolor picker:
+		
+			<pre class="prettyprint">&lt;input id="my-color-picker" name="my-color-picker" /&gt;
+
+	&lt;script type="text/javascript"&gt;
+		$('#my-color-picker').jQolor(
+			{
+				color : '1C72B5', // Default color value
+				colorChange : function( event, data ) {
+					// data keys: hex, red, green, blue, hue, saturation, brightness
+				}
+			} );
+	&lt;/script&gt;</pre>
+		</p>
+	
+		<p>
+			This color picker has an event handler that modifies the graphic above it.
+			To do this it uses the <code>data</code> object's "hex" property.
+		</p>
+		<p>
+			<div id="jqolor-logo-container">
+				<img id="jqolor-logo" src="images/jqolor-logo.png" />
+			</div>
+		</p>
+		<p>
+			<input id="jqolor-event-handling-example" name="jqolor-event-handling-example" />
+		</p>
+	
+		<h2>Where to get jQolor</h2>
+	
+		<p>
+			jQolor is available on Github under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache license</a>.
+			You can download it here: <a href="https://github.com/bvaughn/jqolor">https://github.com/bvaughn/jqolor</a>.
+		</p>
+	
+		<p>
+			Please feel free to contact me on Github with questions, comments, or suggestions.
+		</p>
+	
+		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?lang=html&skin=sunburst"></script>
+	</div>
 </body>
 </html>
